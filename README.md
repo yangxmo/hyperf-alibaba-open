@@ -3,7 +3,7 @@
 ## Installing
 
 ```shell
-$ composer require javareact/alibaba_open -vvv
+$ composer require yangxmo/hyperf-alibaba-open -vvv
 ```
 
 ## Usage
