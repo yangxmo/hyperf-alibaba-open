@@ -20,7 +20,7 @@ class BaseClient
     /**
      * @var string
      */
-    public $base_url = 'http://gw.open.1688.com/openapi/';
+    public $base_url = 'http://gw.open.1688.com';
 
     /**
      * @var
@@ -90,11 +90,15 @@ class BaseClient
         //签名
         $code_sign      = strtoupper(bin2hex(hash_hmac("sha1", $sign_str, $appSecret, true)));
         $this->postData = $code_arr;
-        if ($method == 'get') {
-            $this->res_url = $this->base_url . $apiInfo . '?' . $url_pin . '_aop_signature=' . $code_sign;
-        } else {
-            $this->res_url = $this->base_url . $apiInfo . '?_aop_signature=' . $code_sign;
-        }
+        $this->postData['_aop_signature'] = $code_sign;
+
+        $this->res_url = 'openapi/' . $apiInfo;
+
+//        if ($method == 'get') {
+//            $this->res_url = 'openapi/' . $apiInfo; // . '?' . $url_pin . '_aop_signature=' . $code_sign;
+//        } else {
+//            $this->res_url = 'openapi/' . $apiInfo; // . '?_aop_signature=' . $code_sign;
+//        }
     }
 
     /**
@@ -105,7 +109,8 @@ class BaseClient
     public function get()
     {
         $this->sign('get');
-        return $this->curlRequest($this->res_url, [], 'get');
+
+        return $this->curlRequest($this->res_url, $this->postData, 'get');
     }
 
     /**
@@ -139,7 +144,14 @@ class BaseClient
      */
     public function curlRequest(string $url,array $data,string $method = 'get', int $timeout = 10): array
     {
-        $client = \Hyperf\Support\make(Guzzle::class)->setHttpHandle(['base_uri' => $this->base_url,'timeout' => $timeout]);
+        /** @var Guzzle $client */
+        $client = \Hyperf\Support\make(Guzzle::class);
+
+        $client->setHttpHandle(
+            [
+                'base_uri' => $this->base_url,
+                'timeout' => $timeout,
+            ]);
 
         $method = 'send' . ucfirst($method);
 

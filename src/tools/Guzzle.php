@@ -13,7 +13,7 @@ class Guzzle
     private ClientFactory $clientFactory;
     private Client $client;
 
-    protected array $headers = [];
+    protected array $headers = [''];
 
     /**
      * @param ClientFactory $clientFactory
